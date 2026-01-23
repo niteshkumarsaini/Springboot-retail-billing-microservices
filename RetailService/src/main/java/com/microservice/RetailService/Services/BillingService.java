@@ -5,10 +5,10 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.microservice.RetailService.DTO.ItemRequest;
-import com.microservice.RetailService.Entities.Bill;
+import com.microservice.RetailService.DTO.ItemResponse;
 
 public interface BillingService {
 
-	Bill calculateBill(List<ItemRequest>items);
+	ItemResponse calculateBill(List<ItemRequest> items);
 
 }

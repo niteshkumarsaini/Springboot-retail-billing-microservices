@@ -4,9 +4,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.microservice.RetailService.DTO.ItemRequest;
+import com.microservice.RetailService.DTO.ItemResponse;
 import com.microservice.RetailService.Entities.Bill;
 import com.microservice.RetailService.Exceptions.InvalidRequestException;
 import com.microservice.RetailService.Repositories.BillRepository;
@@ -20,7 +22,7 @@ public class BillingServiceImpl implements BillingService {
 	private BillRepository billRepository;
 
 	@Override
-	public Bill calculateBill(List<ItemRequest> items) {
+	public ItemResponse calculateBill(List<ItemRequest> items) {
 		// Validation
 		validateBusinessRules(items);
 
@@ -37,13 +39,14 @@ public class BillingServiceImpl implements BillingService {
 		Bill generatedBill = Bill.builder().grandTotal(grandTotal).totalItems(items.size()).totalTax(tax).build();
 		try {
 			billRepository.save(generatedBill);
+			return ItemResponse.builder().status(HttpStatus.OK).response(generatedBill).build();
 
 		} catch (Exception e) {
 			e.printStackTrace();
 
 		}
-
-		return generatedBill;
+		return ItemResponse.builder().status(HttpStatus.INTERNAL_SERVER_ERROR)
+				.response("Transaction has not been perfomed. DB might be down.").build();
 	}
 
 	// Validation
